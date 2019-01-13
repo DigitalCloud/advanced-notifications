@@ -131,10 +131,13 @@ class InvoicePaid extends Notification
     private $notifiables;
     
     public function handle($event) {
+        // setup notifiable objects, just for illustration
+        // you can replace this code by your suitable logic
         if($event->notifiables) {
             $this->setNotifiables($event->notifiables);
         }
 
+        // send the notification
         $this->send();
     }
 
@@ -160,8 +163,42 @@ class InvoicePaid extends Notification
 then add this class as a listener in the $listen array in the app/providers/EventServiceProvider.php
 
 ```php
-    protected $listen = [
-        \App\Events\NewPurchase::class => [InvoicePaid::class]
-    ];
 
+protected $listen = [
+    \App\Events\NewPurchase::class => [InvoicePaid::class]
+];
+
+```
+
+and you can fire the event when needed
+
+```php
+
+event(new NewPurchase($args));
+
+```
+
+NewPurchase event look like this:
+
+```php
+
+<?php
+
+namespace App\Events;
+
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Events\Dispatchable;
+use Illuminate\Broadcasting\InteractsWithSockets;
+
+class NewPurchase
+{
+    use Dispatchable, InteractsWithSockets, SerializesModels;
+
+    public $notifiables;
+
+    public function __construct($notifiables = null)
+    {
+        $this->notifiables = $notifiables;
+    }
+}
 ```
