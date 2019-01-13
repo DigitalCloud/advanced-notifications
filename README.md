@@ -41,7 +41,6 @@ To use advanced notification functionality, you need to extends your notificatio
  
  ```php
  
- 
  namespace App\Notifications;
  
  // ...
@@ -73,8 +72,8 @@ class User extends Authenticatable
 }
 
 ```
-Then you can do stuff like this:
 
+Then you can do stuff like this:
 
 ```php
 
@@ -104,4 +103,6 @@ Then you can do stuff like this:
     $channelStatusForNotifiable = AdvancedNotifications::getChannelStatusForNotifiable('database', $notifiable);
 
 ```
+
+After installing, this package will respect the status of each channel, notification and notifiable, it will test the status of those types before actually sending the notification.
 
