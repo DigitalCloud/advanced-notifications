@@ -1,6 +1,13 @@
 # Laravel Advanced Notifications
 This package allows you to manage system notifications in a database.
 
+## Description
+When working with systems which dealing with large number of customers, notification management become kind of complex issue, and a notifications management tool will be appreciated.
+Here we introduce a powerful tool which allow you to manage notifications for your system. we offer api for enable and disable notifications on many levels as the following 
+* you can disable notification globally, so the system will no longer send notifications of this type.
+* you can disable a notification channel globally, so the system will no longer send notification on this channel.
+* you can disable notification for a specific notifiable object on a specific notifications and/or channels.
+
 ## Installation
 
 You can install the package via composer:
@@ -71,6 +78,8 @@ This package will respect the status of each channel, notification and notifiabl
 ## Usage
 ##### Example 1:
 
+It is best practice to leave the job of preparing the notifiable objects to notification itself. so using 
+`getNotifiables()` and `setNotifiables()` will make your code more tidy and clean. a nice example of this:
 
 ```php
 <?php
@@ -108,9 +117,9 @@ class InvoicePaid extends Notification
 
 ```
 
-##### Example 2: as event listener
+##### Example 2: notification as event listener
 
-we can make notification as event listener by adding the handel() function to the notification class.
+we can make notification as event listener by adding the `handel()` function to the notification class.
 
 ```php
 
@@ -149,8 +158,8 @@ class InvoicePaid extends Notification
     }
     
     public function getNotifiables() {
-            return $this->notifiables;
-        }
+        return $this->notifiables;
+    }
 
     public function setNotifiables($notifiables) {
         $this->notifiables = $notifiables;
@@ -170,7 +179,7 @@ protected $listen = [
 
 ```
 
-and you can fire the event when needed
+and you can fire the event when needed:
 
 ```php
 
@@ -178,7 +187,10 @@ event(new NewPurchase($args));
 
 ```
 
-NewPurchase event look like this:
+You can pass the notifiable objects to the event or you leave this job to the notification itself.
+
+
+NewPurchase look like this:
 
 ```php
 
