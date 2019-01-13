@@ -1,0 +1,35 @@
+{
+    "name": "digitalcloud/advanced-notifications",
+    "description": "",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mohammed Shurrab",
+            "email": "m.sh@dce.sa"
+        },
+        {
+            "name": "Motaz Marouf",
+            "email": "m.marouf@dce.sa"
+        }
+    ],
+    "autoload": {
+            "psr-4": {
+                "DigitalCloud\\AdvancedNotifications\\": "src/"
+            }
+        },
+    "require": {
+        "php": ">=7.1.0"
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "laravel": {
+            "providers": [
+                "DigitalCloud\\AdvancedNotifications\\AdvancedNotificationsServiceProvider"
+            ],
+            "aliases": {
+
+            }
+        }
+    }
+}
