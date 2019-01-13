@@ -55,15 +55,19 @@ class NotificationSender extends IlluminateNotificationSender
         $original = clone $notification;
 
         foreach ($notifiables as $notifiable) {
+            if(!AdvancedNotifications::getNotificationStatusForNotifiable(get_class($notification), $notifiable)) continue;
+
             $notificationId = Str::uuid()->toString();
 
             foreach ($original->queue($notifiable) as $channel => $config) {
                 if(is_numeric($channel)){
                     $channel = $config;
+                    if(!AdvancedNotifications::getChannelStatus($channel) || !AdvancedNotifications::getChannelStatusForNotifiable($channel, $notifiable)) continue;
                     $connection = $notification->connection;
                     $queue = $notification->queue;
                     $delay = $notification->delay;
                 }else{
+                    if(!AdvancedNotifications::getChannelStatus($channel) || !AdvancedNotifications::getChannelStatusForNotifiable($channel, $notifiable)) continue;
                     $connection = array_get($config,'connection',$notification->connection);
                     $queue = array_get($config,'queue',$notification->queue);
                     $delay = array_get($config,'delay',$notification->delay);
@@ -99,7 +103,7 @@ class NotificationSender extends IlluminateNotificationSender
 
         $original = clone $notification;
         foreach ($notifiables as $notifiable) {
-            if(!$notifiable->enabled(get_class($notification))) continue;
+            if(!AdvancedNotifications::getNotificationStatusForNotifiable(get_class($notification), $notifiable)) continue;
             if (empty($viaChannels = $channels ?: $notification->via($notifiable))) {
                 continue;
             }
@@ -108,7 +112,7 @@ class NotificationSender extends IlluminateNotificationSender
                 $notificationId = Str::uuid()->toString();
 
                 foreach ((array) $viaChannels as $channel) {
-                    if(!AdvancedNotifications::channelEnabled($channel) || !$notifiable->enabled($channel)) continue;
+                    if(!AdvancedNotifications::getChannelStatus($channel) || !AdvancedNotifications::getChannelStatusForNotifiable($channel, $notifiable)) continue;
                     $this->sendToNotifiable($notifiable, $notificationId, clone $original, $channel);
                 }
             });

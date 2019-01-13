@@ -17,7 +17,8 @@ class ChannelManager extends IlluminateChannelManager
      */
     public function send($notifiables, $notification)
     {
-        if($notification->disabled()) return false;
+
+        if(!AdvancedNotifications::getNotificationStatus(get_class($notification))) return false;
 
         return (new NotificationSender(
             $this, $this->app->make(Bus::class), $this->app->make(Dispatcher::class), $this->locale)
@@ -34,7 +35,7 @@ class ChannelManager extends IlluminateChannelManager
      */
     public function sendNow($notifiables, $notification, array $channels = null)
     {
-        if($notification->disabled()) return false;
+        if(!AdvancedNotifications::getNotificationStatus(get_class($notification))) return false;
 
         return (new NotificationSender(
             $this, $this->app->make(Bus::class), $this->app->make(Dispatcher::class), $this->locale)

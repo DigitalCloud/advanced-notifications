@@ -34,12 +34,12 @@ class Notification extends IlluminateNotification
         return !$this->enabled();
     }
 
-    public function send() {
+    /*public function send() {
         if($this->getNotifiable()) {
             app(Dispatcher::class)->send($this->getNotifiable(), $this);
         }
 
-    }
+    }*/
 
     public function getNotifiable() {
         return  Notifiable::where('status', true)

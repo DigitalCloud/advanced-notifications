@@ -35,45 +35,7 @@ php artisan migrate
 
 ```
 
-## Usage
-
-To use advanced notification functionality, you need to extends your notification class from `DigitalCloud\AdvancedNotifications\Notification` class, which in tern extends the laravel `Illuminate\Notifications\Notification` class, so we can still benefit from original laravel notification functionality
- 
- ```php
- 
- namespace App\Notifications;
- 
- // ...
- use DigitalCloud\AdvancedNotifications\Notification;
-// ...
- 
- class InvoicePaid extends Notification
- {
-    // ...
-    
- }
-
-
- ```
-
-Then, add the `DigitalCloud\AdvancedNotifications\ControlledNotifications` trait to your Notifiable model(s):
-
-```php
-
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use DigitalCloud\AdvancedNotifications\ControlledNotifications;
-
-class User extends Authenticatable
-{
-    use Notifiable, ControlledNotifications;
-
-    // ...
-}
-
-```
-
-Then you can do stuff like this:
+After install, you can do stuff like this:
 
 ```php
 
@@ -104,5 +66,102 @@ Then you can do stuff like this:
 
 ```
 
-After installing, this package will respect the status of each channel, notification and notifiable, it will test the status of those types before actually sending the notification.
+This package will respect the status of each channel, notification and notifiable, it will test the status of those types before actually sending the notification.
 
+## Usage
+##### Example 1:
+
+
+```php
+<?php
+
+namespace App\Notifications;
+
+use App\User;
+use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
+
+class InvoicePaid extends Notification
+{
+    use Queueable;
+    /**
+     * @var User
+     */
+    private $notifiables;
+
+    public function send() {
+        if($this->getNotifiables()) {
+            app(\Illuminate\Contracts\Notifications\Dispatcher::class)
+                ->sendNow($this->getNotifiables(), $this);
+        }
+    }
+    
+    public function getNotifiables() {
+            return $this->notifiables;
+        }
+
+    public function setNotifiables($notifiables) {
+        $this->notifiables = $notifiables;
+    }
+
+}
+
+```
+
+##### Example 2: as event listener
+
+we can make notification as event listener by adding the handel() function to the notification class.
+
+```php
+
+<?php
+
+namespace App\Notifications;
+
+use App\User;
+use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Notification;
+
+class InvoicePaid extends Notification
+{
+    use Queueable;
+    /**
+     * @var User
+     */
+    private $notifiables;
+    
+    public function handle($event) {
+        if($event->notifiables) {
+            $this->setNotifiables($event->notifiables);
+        }
+
+        $this->send();
+    }
+
+    public function send() {
+        if($this->getNotifiables()) {
+            app(\Illuminate\Contracts\Notifications\Dispatcher::class)
+                ->sendNow($this->getNotifiables(), $this);
+        }
+    }
+    
+    public function getNotifiables() {
+            return $this->notifiables;
+        }
+
+    public function setNotifiables($notifiables) {
+        $this->notifiables = $notifiables;
+    }
+
+}
+
+```
+
+then add this class as a listener in the $listen array in the app/providers/EventServiceProvider.php
+
+```php
+    protected $listen = [
+        \App\Events\NewPurchase::class => [InvoicePaid::class]
+    ];
+
+```
